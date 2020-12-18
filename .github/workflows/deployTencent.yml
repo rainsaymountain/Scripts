@@ -22,6 +22,13 @@ jobs:
         run: |
           npm install
           sudo npm install serverless -g
+      - name: "将Secrets里面配置的变量添加到severless.yml里面作为环境变量"
+        run: |
+		  if [ $CONFIG ]; then sed -i "/variables/a\      TEST: TEST" serverless.yml; fi;
+          cat serverless.yml
+          env
+        env: #因为直接读取secrets里面的值很多字符不会自动转译，导致写入serverless.yml异常，所以设置到环境变量，在读取环境变量转译过的值
+          CONFIG: ${{ secrets.CONFIG}}
       - name: "部署到腾讯云函数"
         run: serverless deploy
         env:
